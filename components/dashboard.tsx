@@ -189,7 +189,7 @@ export default function Dashboard() {
             return (
               <div
                 key={asset.id}
-                onClick={() => router.push(`/assets/new?id=${asset.id}`)}
+                onClick={() => router.push(`/assets/${asset.id}`)}
                 className="bg-white rounded-xl p-3 shadow-sm border border-gray-100 cursor-pointer hover:shadow-md transition-shadow"
               >
                 <div className="flex items-start justify-between mb-2">
