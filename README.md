@@ -1,36 +1,86 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## 值道 - 资产管理应用
 
-## Getting Started
+一个简洁高效的个人资产管理工具，采用 Next.js 16 + Vercel Postgres 构建。
 
-First, run the development server:
+### 功能特性
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- 📊 **资产管理** - 支持现金、投资、房产、负债四大类别
+- 📈 **趋势可视化** - 查看历史净资产变化趋势
+- 🔒 **隐私模式** - 一键隐藏所有金额数字
+- 📱 **响应式设计** - 完美适配桌面端和移动端
+- 🔔 **Bark 推送** - 大额资产变动自动推送到 iOS 设备
+- 🔐 **Google 登录** - 安全的 OAuth 2.0 认证
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 技术栈
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **前端**: Next.js 16 (App Router) + TypeScript + Tailwind CSS 4
+- **UI 组件**: shadcn/ui + Radix UI
+- **数据库**: Vercel Postgres + Prisma ORM
+- **认证**: NextAuth.js v5 (Email Provider)
+- **图表**: Recharts
+- **推送**: Bark (iOS)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 快速开始
 
-## Learn More
+1. **安装依赖**
 
-To learn more about Next.js, take a look at the following resources:
+   ```bash
+   npm install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. **配置环境变量**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   复制 `env.example` 创建 `.env` 文件：
 
-## Deploy on Vercel
+   ```bash
+   cp env.example .env
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   配置以下变量：
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   - `POSTGRES_PRISMA_URL`: 数据库连接字符串
+   - `NEXTAUTH_URL`: 应用域名 (本地开发使用 `http://localhost:3000`)
+   - `NEXTAUTH_SECRET`: 认证密钥 (可用 `openssl rand -base64 32` 生成)
+   - `GOOGLE_CLIENT_ID`: Google OAuth 客户端 ID ([获取方式](https://console.cloud.google.com/apis/credentials))
+   - `GOOGLE_CLIENT_SECRET`: Google OAuth 客户端密钥
+   - `BARK_KEY`: (可选) Bark 推送密钥
+
+3. **初始化数据库**
+
+   ```bash
+   npx prisma db push
+   npx prisma generate
+   ```
+
+4. **启动开发服务器**
+
+   ```bash
+   npm run dev
+   ```
+
+   访问 http://localhost:3000
+
+### 数据库结构
+
+- **users** - 用户表
+- **assets** - 资产明细表
+- **snapshots** - 每日净资产快照表
+
+### 部署到 Vercel
+
+1. 推送代码到 GitHub
+2. 在 Vercel 导入项目
+3. 配置环境变量
+4. 自动部署完成
+
+### 开发状态
+
+- [x] Phase 1: 基础设施搭建
+- [x] Phase 2: 核心资产管理 API
+- [ ] Phase 3: Dashboard 可视化
+- [ ] Phase 4: 增强体验
+- [ ] Phase 5: 部署与优化
+
+### License
+
+MIT

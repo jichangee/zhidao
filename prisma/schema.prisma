@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  avatarUrl String?   @map("avatar_url")
+  createdAt DateTime  @default(now()) @map("created_at")
+  lastLogin DateTime? @map("last_login")
+  
+  assets    Asset[]
+  snapshots Snapshot[]
+  
+  @@map("users")
+}
+
+model Asset {
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  category   String   // 'CASH', 'INVEST', 'PROPERTY', 'LIABILITY'
+  name       String
+  balance    Decimal  @db.Decimal(15, 2)
+  isHidden   Boolean  @default(false) @map("is_hidden")
+  updateTime DateTime @default(now()) @updatedAt @map("update_time")
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("assets")
+}
+
+model Snapshot {
+  id            Int      @id @default(autoincrement())
+  userId        String   @map("user_id")
+  totalNetWorth Decimal  @db.Decimal(15, 2) @map("total_net_worth")
+  recordDate    DateTime @map("record_date") @db.Date
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, recordDate])
+  @@map("snapshots")
+}
