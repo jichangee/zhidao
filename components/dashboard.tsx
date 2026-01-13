@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Search, ChevronDown, ArrowUpDown, Filter, CheckSquare, Home, Heart, Circle, Settings, Plus, Package } from "lucide-react"
+import { Search, ChevronDown, ArrowUpDown, Filter, CheckSquare, Home, Heart, Circle, Settings, Plus, Package, ArrowUp, ArrowDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface Asset {
@@ -29,12 +29,17 @@ interface DashboardData {
   categories: string[]
 }
 
+type SortField = "name" | "price" | "date" | "dailyCost" | "none"
+type SortOrder = "asc" | "desc"
+
 export default function Dashboard() {
   const router = useRouter()
   const [data, setData] = useState<DashboardData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState("全部")
   const [selectedStatus, setSelectedStatus] = useState("全部")
+  const [sortField, setSortField] = useState<SortField>("none")
+  const [sortOrder, setSortOrder] = useState<SortOrder>("asc")
 
   useEffect(() => {
     fetchDashboard()
@@ -71,11 +76,67 @@ export default function Dashboard() {
     return `¥${amount.toLocaleString("zh-CN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
   }
 
+  const handleSortClick = () => {
+    // 循环切换排序方式：none -> name asc -> name desc -> price asc -> price desc -> date asc -> date desc -> dailyCost asc -> dailyCost desc -> none
+    const sortSequence: Array<{ field: SortField; order: SortOrder }> = [
+      { field: "none", order: "asc" },
+      { field: "name", order: "asc" },
+      { field: "name", order: "desc" },
+      { field: "price", order: "asc" },
+      { field: "price", order: "desc" },
+      { field: "date", order: "asc" },
+      { field: "date", order: "desc" },
+      { field: "dailyCost", order: "asc" },
+      { field: "dailyCost", order: "desc" },
+    ]
+    
+    const currentIndex = sortSequence.findIndex(
+      (s) => s.field === sortField && s.order === sortOrder
+    )
+    const nextIndex = (currentIndex + 1) % sortSequence.length
+    const nextSort = sortSequence[nextIndex]
+    
+    setSortField(nextSort.field)
+    setSortOrder(nextSort.order)
+  }
+
   const filteredAssets = data?.assets.filter((asset) => {
     const categoryMatch = selectedCategory === "全部" || asset.assetType === selectedCategory
     const statusMatch = selectedStatus === "全部" || asset.status === selectedStatus
     return categoryMatch && statusMatch
   }) || []
+
+  // 排序逻辑
+  const sortedAssets = [...filteredAssets].sort((a, b) => {
+    if (sortField === "none") return 0
+
+    let comparison = 0
+
+    switch (sortField) {
+      case "name":
+        comparison = (a.name || "").localeCompare(b.name || "", "zh-CN")
+        break
+      case "price":
+        const priceA = a.purchasePrice || 0
+        const priceB = b.purchasePrice || 0
+        comparison = priceA - priceB
+        break
+      case "date":
+        const dateA = a.purchaseDate ? new Date(a.purchaseDate).getTime() : 0
+        const dateB = b.purchaseDate ? new Date(b.purchaseDate).getTime() : 0
+        comparison = dateA - dateB
+        break
+      case "dailyCost":
+        const daysA = calculateDaysUsed(a.purchaseDate)
+        const daysB = calculateDaysUsed(b.purchaseDate)
+        const dailyCostA = calculateDailyCost(a.purchasePrice, daysA)
+        const dailyCostB = calculateDailyCost(b.purchasePrice, daysB)
+        comparison = dailyCostA - dailyCostB
+        break
+    }
+
+    return sortOrder === "asc" ? comparison : -comparison
+  })
 
   if (isLoading) {
     return (
@@ -168,16 +229,39 @@ export default function Dashboard() {
               {status}
             </button>
           ))}
-          <div className="flex items-center gap-2 ml-auto">
-            <ArrowUpDown className="w-4 h-4 text-gray-500" />
-            <Filter className="w-4 h-4 text-gray-500" />
-            <CheckSquare className="w-4 h-4 text-gray-500" />
-          </div>
+          <button
+            onClick={handleSortClick}
+            className="flex items-center gap-1 ml-auto px-2 py-1 rounded hover:bg-gray-100 transition-colors"
+            title={
+              sortField === "none" ? "排序" :
+              sortField === "name" ? `按名称${sortOrder === "asc" ? "升序" : "降序"}` :
+              sortField === "price" ? `按价格${sortOrder === "asc" ? "升序" : "降序"}` :
+              sortField === "date" ? `按购买日期${sortOrder === "asc" ? "升序" : "降序"}` :
+              sortField === "dailyCost" ? `按日均成本${sortOrder === "asc" ? "升序" : "降序"}` :
+              "排序"
+            }
+          >
+            {sortField === "none" ? (
+              <ArrowUpDown className="w-4 h-4 text-gray-500" />
+            ) : sortOrder === "asc" ? (
+              <ArrowUp className="w-4 h-4 text-orange-600" />
+            ) : (
+              <ArrowDown className="w-4 h-4 text-orange-600" />
+            )}
+            {sortField !== "none" && (
+              <span className="text-xs text-gray-600">
+                {sortField === "name" ? "名称" :
+                 sortField === "price" ? "价格" :
+                 sortField === "date" ? "日期" :
+                 sortField === "dailyCost" ? "日均" : ""}
+              </span>
+            )}
+          </button>
         </div>
 
         {/* Asset Grid */}
         <div className="grid grid-cols-2 gap-3 mb-4">
-          {filteredAssets.map((asset) => {
+          {sortedAssets.map((asset) => {
             const daysUsed = calculateDaysUsed(asset.purchaseDate)
             const dailyCost = calculateDailyCost(asset.purchasePrice, daysUsed)
             const statusColors = {
