@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/auth"
 import prisma from "@/lib/prisma"
-import { calculateNetWorth } from "@/lib/snapshot"
 
 export async function GET(request: NextRequest) {
   const session = await auth()
@@ -19,46 +18,69 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Get current net worth
-    const netWorth = await calculateNetWorth(user.id)
-
-    // Get assets grouped by category
+    // Get all assets
     const assets = await prisma.asset.findMany({
       where: { userId: user.id },
-    })
-
-    const categories = assets.reduce((acc, asset) => {
-      const value = Number(asset.balance)
-      const current = acc[asset.category] || 0
-      acc[asset.category] = asset.category === 'LIABILITY' ? current - value : current + value
-      return acc
-    }, {} as Record<string, number>)
-
-    // Get trend data from snapshots (last 90 days)
-    const ninetyDaysAgo = new Date()
-    ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90)
-
-    const snapshots = await prisma.snapshot.findMany({
-      where: {
-        userId: user.id,
-        recordDate: {
-          gte: ninetyDaysAgo,
-        },
-      },
       orderBy: {
-        recordDate: "asc",
+        updateTime: "desc",
       },
     })
 
-    const trend = snapshots.map((snapshot) => ({
-      date: snapshot.recordDate.toISOString().split('T')[0],
-      value: Number(snapshot.totalNetWorth),
+    // Calculate total assets (sum of purchase prices for active assets)
+    const totalAssets = assets
+      .filter((asset) => asset.status === "服役中" && asset.purchasePrice)
+      .reduce((sum, asset) => sum + Number(asset.purchasePrice || 0), 0)
+
+    // Calculate daily average cost (sum of all active assets' daily costs)
+    const now = new Date()
+    let totalDailyCost = 0
+
+    assets.forEach((asset) => {
+      if (asset.status === "服役中" && asset.purchasePrice && asset.purchaseDate) {
+        const purchaseDate = new Date(asset.purchaseDate)
+        const daysUsed = Math.max(1, Math.floor((now.getTime() - purchaseDate.getTime()) / (1000 * 60 * 60 * 24)))
+        const dailyCost = Number(asset.purchasePrice) / daysUsed
+        totalDailyCost += dailyCost
+      }
+    })
+
+    const dailyAverageCost = totalDailyCost
+
+    // Count assets by status
+    const statusCounts = {
+      active: assets.filter((asset) => asset.status === "服役中").length,
+      retired: assets.filter((asset) => asset.status === "已退役").length,
+      sold: assets.filter((asset) => asset.status === "已卖出").length,
+    }
+
+    // Get unique categories (assetType) from assets
+    const categories = Array.from(
+      new Set(
+        assets
+          .map((asset) => asset.assetType)
+          .filter((type): type is string => type !== null && type !== undefined)
+      )
+    )
+
+    // Format assets for frontend
+    const formattedAssets = assets.map((asset) => ({
+      id: asset.id,
+      name: asset.name,
+      purchasePrice: asset.purchasePrice ? Number(asset.purchasePrice) : null,
+      purchaseDate: asset.purchaseDate ? asset.purchaseDate.toISOString() : null,
+      status: asset.status,
+      assetType: asset.assetType,
+      category: asset.category,
+      imageUrl: asset.imageUrl,
+      emoji: asset.emoji,
     }))
 
     return NextResponse.json({
-      netWorth,
+      totalAssets,
+      dailyAverageCost,
+      assets: formattedAssets,
+      statusCounts,
       categories,
-      trend,
     })
   } catch (error) {
     console.error("Error fetching dashboard data:", error)

@@ -5,8 +5,8 @@ export default function VerifyRequestPage() {
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-8 shadow-xl dark:bg-gray-900">
         <div className="text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
-            <CheckCircle className="h-10 w-10 text-green-600 dark:text-green-400" />
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900">
+            <CheckCircle className="h-10 w-10 text-orange-600 dark:text-orange-400" />
           </div>
           <h1 className="mt-6 text-2xl font-bold text-gray-900 dark:text-white">
             检查您的邮箱

@@ -55,7 +55,27 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json()
-    const { id, category, name, balance, isHidden } = body
+    const { 
+      id, 
+      category, 
+      name, 
+      balance, 
+      isHidden,
+      purchasePrice,
+      purchaseDate,
+      status,
+      assetType,
+      tags,
+      targetCostType,
+      targetCost,
+      targetDate,
+      isPinned,
+      excludeFromTotal,
+      excludeFromDailyAvg,
+      notes,
+      imageUrl,
+      emoji
+    } = body
 
     // Validate required fields
     if (!category || !name || balance === undefined) {
@@ -85,6 +105,20 @@ export async function POST(request: NextRequest) {
           name,
           balance,
           isHidden: isHidden ?? false,
+          purchasePrice: purchasePrice !== undefined ? purchasePrice : null,
+          purchaseDate: purchaseDate ? new Date(purchaseDate) : null,
+          status: status || "服役中",
+          assetType: assetType || null,
+          tags: tags || null,
+          targetCostType: targetCostType || null,
+          targetCost: targetCost !== undefined ? targetCost : null,
+          targetDate: targetDate ? new Date(targetDate) : null,
+          isPinned: isPinned ?? false,
+          excludeFromTotal: excludeFromTotal ?? false,
+          excludeFromDailyAvg: excludeFromDailyAvg ?? false,
+          notes: notes || null,
+          imageUrl: imageUrl || null,
+          emoji: emoji || null,
         },
       })
     } else {
@@ -96,6 +130,20 @@ export async function POST(request: NextRequest) {
           name,
           balance,
           isHidden: isHidden ?? false,
+          purchasePrice: purchasePrice !== undefined ? purchasePrice : null,
+          purchaseDate: purchaseDate ? new Date(purchaseDate) : null,
+          status: status || "服役中",
+          assetType: assetType || null,
+          tags: tags || null,
+          targetCostType: targetCostType || null,
+          targetCost: targetCost !== undefined ? targetCost : null,
+          targetDate: targetDate ? new Date(targetDate) : null,
+          isPinned: isPinned ?? false,
+          excludeFromTotal: excludeFromTotal ?? false,
+          excludeFromDailyAvg: excludeFromDailyAvg ?? false,
+          notes: notes || null,
+          imageUrl: imageUrl || null,
+          emoji: emoji || null,
         },
       })
     }
@@ -109,11 +157,44 @@ export async function POST(request: NextRequest) {
     const changeAmount = Number(balance) - oldBalance
     if (id && shouldNotify(changeAmount)) {
       sendBarkNotification(
+        user.id,
         "资产变动提醒",
         `您更新了${name}，当前余额¥${Number(balance).toLocaleString()}`
       ).catch((error) => {
         console.error("Failed to send notification:", error)
       })
+    }
+
+    // Check target cost/date and send notification if reached
+    if (asset.targetCostType === "按价格" && asset.targetCost && asset.purchasePrice) {
+      const currentPrice = Number(asset.purchasePrice)
+      const targetPrice = Number(asset.targetCost)
+      if (currentPrice >= targetPrice) {
+        sendBarkNotification(
+          user.id,
+          "目标价格提醒",
+          `${name}已达到目标价格¥${targetPrice.toLocaleString()}`
+        ).catch((error) => {
+          console.error("Failed to send target price notification:", error)
+        })
+      }
+    }
+
+    if (asset.targetCostType === "按日期" && asset.targetDate) {
+      const targetDate = new Date(asset.targetDate)
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      targetDate.setHours(0, 0, 0, 0)
+      
+      if (today >= targetDate) {
+        sendBarkNotification(
+          user.id,
+          "目标日期提醒",
+          `${name}已达到目标日期${targetDate.toLocaleDateString("zh-CN")}`
+        ).catch((error) => {
+          console.error("Failed to send target date notification:", error)
+        })
+      }
     }
 
     return NextResponse.json(asset)

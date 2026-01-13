@@ -3,6 +3,50 @@ import { auth } from "@/auth"
 import prisma from "@/lib/prisma"
 import { updateSnapshot } from "@/lib/snapshot"
 
+// GET /api/assets/[id] - Get a specific asset
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await auth()
+  
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+  })
+
+  if (!user) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 })
+  }
+
+  try {
+    const { id } = await params
+
+    // Verify the asset belongs to the user
+    const asset = await prisma.asset.findFirst({
+      where: {
+        id,
+        userId: user.id,
+      },
+    })
+
+    if (!asset) {
+      return NextResponse.json({ error: "Asset not found" }, { status: 404 })
+    }
+
+    return NextResponse.json(asset)
+  } catch (error) {
+    console.error("Error fetching asset:", error)
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    )
+  }
+}
+
 // PATCH /api/assets/[id] - Update a specific asset
 export async function PATCH(
   request: NextRequest,
