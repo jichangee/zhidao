@@ -196,7 +196,7 @@ export default function Dashboard() {
       </header>
 
       {/* Main Content */}
-      <main className="px-4 pt-4">
+      <main className="px-4 pt-4 pb-24">
         {/* Category Tabs */}
         <div className="flex gap-6 mb-4 border-b border-gray-200">
           {["全部", ...(data?.categories || [])].map((category) => (
@@ -324,36 +324,32 @@ export default function Dashboard() {
       </main>
 
       {/* Bottom Navigation Bar */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2">
-        <div className="flex items-center justify-around max-w-md mx-auto">
-          <button className="flex flex-col items-center gap-1 p-2">
-            <div className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center">
-              <Home className="w-4 h-4 text-white" />
+      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-bottom">
+        <div className="flex items-center justify-center gap-16 max-w-md mx-auto py-3">
+          <button className="flex flex-col items-center gap-1.5 p-2 min-w-[60px]">
+            <div className="w-9 h-9 rounded-full bg-gray-800 flex items-center justify-center">
+              <Home className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xs text-gray-900">首页</span>
-          </button>
-          <button className="flex flex-col items-center gap-1 p-2">
-            <Heart className="w-6 h-6 text-gray-400" />
-          </button>
-          <button className="flex flex-col items-center gap-1 p-2">
-            <Circle className="w-6 h-6 text-gray-400" />
+            <span className="text-xs font-medium text-gray-900">首页</span>
           </button>
           <button 
             onClick={() => router.push("/settings")}
-            className="flex flex-col items-center gap-1 p-2"
+            className="flex flex-col items-center gap-1.5 p-2 min-w-[60px]"
           >
             <Settings className="w-6 h-6 text-gray-400" />
-          </button>
-          <button 
-            onClick={() => router.push("/assets/new")}
-            className="flex flex-col items-center gap-1 p-2"
-          >
-            <div className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center shadow-lg">
-              <Plus className="w-6 h-6 text-white" />
-            </div>
+            <span className="text-xs font-medium text-gray-500">设置</span>
           </button>
         </div>
       </nav>
+
+      {/* Floating Add Asset Button */}
+      <button
+        onClick={() => router.push("/assets/new")}
+        className="fixed bottom-28 right-6 w-14 h-14 rounded-full bg-gray-800 flex items-center justify-center shadow-lg hover:shadow-xl hover:bg-gray-900 transition-all z-50 active:scale-95"
+        aria-label="新增资产"
+      >
+        <Plus className="w-7 h-7 text-white" />
+      </button>
     </div>
   )
 }
