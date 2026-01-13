@@ -38,7 +38,7 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState("全部")
   const [selectedStatus, setSelectedStatus] = useState("全部")
-  const [sortField, setSortField] = useState<SortField>("none")
+  const [sortField, setSortField] = useState<SortField>("dailyCost")
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc")
 
   useEffect(() => {
