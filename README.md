@@ -38,7 +38,7 @@
 
    配置以下变量：
 
-   - `POSTGRES_PRISMA_URL`: 数据库连接字符串
+   - `DATABASE_URL`: 数据库连接字符串
    - `NEXTAUTH_URL`: 应用域名 (本地开发使用 `http://localhost:3000`)
    - `NEXTAUTH_SECRET`: 认证密钥 (可用 `openssl rand -base64 32` 生成)
    - `GOOGLE_CLIENT_ID`: Google OAuth 客户端 ID ([获取方式](https://console.cloud.google.com/apis/credentials))
