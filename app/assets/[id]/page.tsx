@@ -91,7 +91,7 @@ export default function AssetDetailPage() {
   }
 
   const calculateDaysToTarget = () => {
-    if (!asset.targetCostType || asset.targetCostType === "不设定") return null
+    if (!asset || !asset.targetCostType || asset.targetCostType === "不设定") return null
 
     if (asset.targetCostType === "按日期" && asset.targetDate) {
       const target = new Date(asset.targetDate)
