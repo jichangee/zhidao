@@ -87,6 +87,7 @@ export async function POST(request: NextRequest) {
 
     let asset
     let oldBalance = 0
+    let shouldResetNotification = false
 
     if (id) {
       // Update existing asset
@@ -96,6 +97,14 @@ export async function POST(request: NextRequest) {
 
       if (existingAsset) {
         oldBalance = Number(existingAsset.balance)
+        
+        // Check if target price settings changed - if so, reset notification flag
+        const targetCostTypeChanged = targetCostType !== existingAsset.targetCostType
+        const targetCostChanged = targetCost !== (existingAsset.targetCost ? Number(existingAsset.targetCost) : null)
+        
+        if (targetCostTypeChanged || (targetCostType === "按价格" && targetCostChanged)) {
+          shouldResetNotification = true
+        }
       }
 
       asset = await prisma.asset.update({
@@ -119,6 +128,8 @@ export async function POST(request: NextRequest) {
           notes: notes || null,
           imageUrl: imageUrl || null,
           emoji: emoji || null,
+          // Reset notification flag if target price settings changed
+          targetPriceNotified: shouldResetNotification ? false : undefined,
         },
       })
     } else {
@@ -165,37 +176,7 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Check target cost/date and send notification if reached
-    if (asset.targetCostType === "按价格" && asset.targetCost && asset.purchasePrice) {
-      const currentPrice = Number(asset.purchasePrice)
-      const targetPrice = Number(asset.targetCost)
-      if (currentPrice >= targetPrice) {
-        sendBarkNotification(
-          user.id,
-          "目标价格提醒",
-          `${name}已达到目标价格¥${targetPrice.toLocaleString()}`
-        ).catch((error) => {
-          console.error("Failed to send target price notification:", error)
-        })
-      }
-    }
-
-    if (asset.targetCostType === "按日期" && asset.targetDate) {
-      const targetDate = new Date(asset.targetDate)
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-      targetDate.setHours(0, 0, 0, 0)
-      
-      if (today >= targetDate) {
-        sendBarkNotification(
-          user.id,
-          "目标日期提醒",
-          `${name}已达到目标日期${targetDate.toLocaleDateString("zh-CN")}`
-        ).catch((error) => {
-          console.error("Failed to send target date notification:", error)
-        })
-      }
-    }
+    // Note: Target price notifications are handled by the daily cron job at /api/cron/check-target-price
 
     return NextResponse.json(asset)
   } catch (error) {

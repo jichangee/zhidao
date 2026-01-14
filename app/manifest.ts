@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: '简洁高效的个人资产管理工具',
     start_url: '/',
     display: 'standalone',
-    background_color: '#ffffff',
-    theme_color: '#ffffff',
+    background_color: '#fb923c',
+    theme_color: '#fb923c',
     icons: [
       {
         src: '/icon.png',

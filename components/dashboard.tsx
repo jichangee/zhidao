@@ -144,7 +144,7 @@ export default function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen" style={{ background: 'linear-gradient(to bottom right, #fb923c, #f97316)' }}>
+      <div className="min-h-screen" style={{ background: '#fb923c' }}>
         {/* Header Skeleton */}
         <header className="pt-12 pb-6 px-4">
           <div className="flex items-center justify-between mb-6">

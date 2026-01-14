@@ -9,6 +9,7 @@
 - 🔒 **隐私模式** - 一键隐藏所有金额数字
 - 📱 **响应式设计** - 完美适配桌面端和移动端
 - 🔔 **Bark 推送** - 大额资产变动自动推送到 iOS 设备
+- 🎯 **目标价格提醒** - 资产达到目标价格时自动通知（每日检查）
 - 🔐 **Google 登录** - 安全的 OAuth 2.0 认证
 
 ### 技术栈
@@ -44,6 +45,7 @@
    - `GOOGLE_CLIENT_ID`: Google OAuth 客户端 ID ([获取方式](https://console.cloud.google.com/apis/credentials))
    - `GOOGLE_CLIENT_SECRET`: Google OAuth 客户端密钥
    - `BARK_KEY`: (可选) Bark 推送密钥
+   - `CRON_SECRET`: (生产环境) Vercel Cron 认证密钥
 
 3. **初始化数据库**
 
@@ -65,6 +67,13 @@
 - **users** - 用户表
 - **assets** - 资产明细表
 - **snapshots** - 每日净资产快照表
+
+### 定时任务
+
+应用使用 Vercel Cron 执行每日定时任务：
+
+- **目标价格检查** - 每天 UTC+8 00:00 执行，检查资产是否达到目标价格并发送通知
+  - 详细说明见 [docs/target-price-notification.md](docs/target-price-notification.md)
 
 ### 部署到 Vercel
 
