@@ -429,7 +429,7 @@ export default function AssetDetailPage() {
         </div>
 
         {/* Action Buttons */}
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200">
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 safe-area-bottom">
           <div className="flex gap-3">
             <Button
               type="button"
