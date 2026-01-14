@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { X, Edit2, Calendar, Tag, Image as ImageIcon, ChevronRight, Package, Pin, UserX, BarChart3, ArrowUp, ArrowDown, Plus, Trash2 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
 import {
   Dialog,
   DialogContent,
@@ -12,6 +13,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const DEFAULT_CATEGORIES = ["全部"]
 const DEFAULT_TAGS: string[] = []
@@ -313,8 +315,82 @@ export default function NewAssetPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-gray-600">加载中...</div>
+      <div className="min-h-screen bg-white pb-24">
+        {/* Header */}
+        <header className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3">
+          <div className="flex items-center justify-between">
+            <Skeleton className="w-8 h-8 rounded-full" />
+            <Skeleton className="h-6 w-24" />
+            <div className="w-8" />
+          </div>
+        </header>
+
+        <div className="px-4 pb-4">
+          {/* Item Icon */}
+          <div className="flex justify-center my-6">
+            <Skeleton className="w-24 h-24 rounded-xl" />
+          </div>
+
+          {/* Item Name */}
+          <div className="mb-4">
+            <Skeleton className="h-10 w-full" />
+          </div>
+
+          {/* Price */}
+          <div className="mb-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Skeleton className="w-5 h-5 rounded-full" />
+              <Skeleton className="h-4 w-12" />
+            </div>
+            <Skeleton className="h-10 w-full" />
+          </div>
+
+          {/* Purchase Date */}
+          <div className="mb-4">
+            <Skeleton className="h-12 w-full rounded-lg" />
+          </div>
+
+          {/* Category */}
+          <div className="mb-4">
+            <Skeleton className="h-12 w-full rounded-lg" />
+          </div>
+
+          {/* Tags */}
+          <div className="mb-4">
+            <Skeleton className="h-12 w-full rounded-lg" />
+          </div>
+
+          {/* Target Cost */}
+          <div className="mb-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Skeleton className="w-5 h-5 rounded-full" />
+              <Skeleton className="h-4 w-16" />
+            </div>
+            <div className="grid grid-cols-3 gap-2 mb-3">
+              <Skeleton className="h-9 rounded-lg" />
+              <Skeleton className="h-9 rounded-lg" />
+              <Skeleton className="h-9 rounded-lg" />
+            </div>
+          </div>
+
+          {/* Notes */}
+          <div className="mb-4">
+            <Skeleton className="h-4 w-16 mb-2" />
+            <Skeleton className="h-32 w-full rounded-lg" />
+          </div>
+
+          {/* Toggle Options */}
+          <div className="space-y-3 mb-4">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <Skeleton key={i} className="h-12 w-full rounded-lg" />
+            ))}
+          </div>
+
+          {/* Save Button */}
+          <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200">
+            <Skeleton className="h-12 w-full rounded-lg" />
+          </div>
+        </div>
       </div>
     )
   }
@@ -505,11 +581,11 @@ export default function NewAssetPage() {
         {/* Notes */}
         <div className="mb-4">
           <label className="text-sm font-medium text-gray-700 mb-2 block">输入备注</label>
-          <textarea
+          <Textarea
             value={formData.notes}
             onChange={(e) => handleInputChange("notes", e.target.value)}
             placeholder=""
-            className="w-full h-32 p-3 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="h-32 resize-none"
           />
         </div>
 

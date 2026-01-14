@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Search, ChevronDown, ArrowUpDown, Filter, CheckSquare, Home, Heart, Circle, Settings, Plus, Package, ArrowUp, ArrowDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Progress } from "@/components/ui/progress"
 
 interface Asset {
   id: string
@@ -179,12 +180,12 @@ export default function Dashboard() {
           </div>
 
           {/* Status Progress Bar */}
-          <div className="relative h-6 bg-gray-200 rounded-full overflow-hidden">
-            <div 
-              className="absolute left-0 top-0 h-full bg-orange-500"
-              style={{ width: `${totalCount > 0 ? (statusCounts.active / totalCount) * 100 : 0}%` }}
+          <div className="space-y-2">
+            <Progress 
+              value={totalCount > 0 ? (statusCounts.active / totalCount) * 100 : 0}
+              className="h-3 bg-gray-200"
             />
-            <div className="absolute inset-0 flex items-center justify-between px-3 text-xs font-medium">
+            <div className="flex items-center justify-between text-xs font-medium">
               <span className="text-orange-700">服役中 {statusCounts.active}</span>
               <div className="flex gap-2">
                 <span className="text-gray-600">已退役 {statusCounts.retired}</span>

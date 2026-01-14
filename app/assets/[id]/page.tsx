@@ -90,6 +90,41 @@ export default function AssetDetailPage() {
     return date.toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric" })
   }
 
+  const calculateDaysToTarget = () => {
+    if (!asset.targetCostType || asset.targetCostType === "不设定") return null
+
+    if (asset.targetCostType === "按日期" && asset.targetDate) {
+      const target = new Date(asset.targetDate)
+      const now = new Date()
+      const diffTime = target.getTime() - now.getTime()
+      const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+      return days
+    }
+
+    if (asset.targetCostType === "按价格" && asset.targetCost && asset.purchasePrice && asset.purchaseDate) {
+      const daysUsed = calculateDaysUsed(asset.purchaseDate)
+      if (daysUsed === 0) return null
+      
+      const currentDailyCost = asset.purchasePrice / daysUsed
+      const targetDailyCost = asset.targetCost
+      
+      if (currentDailyCost <= targetDailyCost) {
+        return 0 // 已达到目标
+      }
+      
+      // 计算还需要多少天才能达到目标日均成本
+      // purchasePrice / (daysUsed + x) = targetCost
+      // purchasePrice = targetCost * (daysUsed + x)
+      // daysUsed + x = purchasePrice / targetCost
+      // x = purchasePrice / targetCost - daysUsed
+      const totalDaysNeeded = asset.purchasePrice / targetDailyCost
+      const daysRemaining = Math.ceil(totalDaysNeeded - daysUsed)
+      return daysRemaining > 0 ? daysRemaining : 0
+    }
+
+    return null
+  }
+
   const handleEdit = () => {
     router.push(`/assets/new?id=${assetId}`)
   }
@@ -277,17 +312,65 @@ export default function AssetDetailPage() {
         </div>
 
         {/* Target Cost */}
-        {asset.targetCostType && (
+        {asset.targetCostType && asset.targetCostType !== "不设定" && (
           <div className="mb-4">
             <div className="flex items-center gap-2 mb-2">
               <label className="text-sm font-medium text-gray-700">目标成本</label>
             </div>
-            <div className="p-3 border border-gray-200 rounded-lg">
+            <div className="p-3 border border-gray-200 rounded-lg space-y-2">
               {asset.targetCostType === "按价格" && asset.targetCost && (
-                <div className="text-sm text-gray-900">按价格: {formatCurrency(asset.targetCost)}</div>
+                <>
+                  <div className="text-sm text-gray-900">按价格: {formatCurrency(asset.targetCost)}</div>
+                  {(() => {
+                    const daysRemaining = calculateDaysToTarget()
+                    if (daysRemaining !== null) {
+                      if (daysRemaining === 0) {
+                        return (
+                          <div className="flex items-center gap-1 text-sm text-green-600 font-medium">
+                            <span>✓</span>
+                            <span>已达到目标</span>
+                          </div>
+                        )
+                      } else {
+                        return (
+                          <div className="flex items-center gap-1 text-sm">
+                            <span className="text-gray-500">距离目标还需</span>
+                            <span className="font-semibold text-orange-600">{daysRemaining}</span>
+                            <span className="text-gray-500">天</span>
+                          </div>
+                        )
+                      }
+                    }
+                    return null
+                  })()}
+                </>
               )}
               {asset.targetCostType === "按日期" && asset.targetDate && (
-                <div className="text-sm text-gray-900">按日期: {formatDate(asset.targetDate)}</div>
+                <>
+                  <div className="text-sm text-gray-900">按日期: {formatDate(asset.targetDate)}</div>
+                  {(() => {
+                    const daysRemaining = calculateDaysToTarget()
+                    if (daysRemaining !== null) {
+                      if (daysRemaining <= 0) {
+                        return (
+                          <div className="flex items-center gap-1 text-sm text-green-600 font-medium">
+                            <span>✓</span>
+                            <span>已到达目标日期</span>
+                          </div>
+                        )
+                      } else {
+                        return (
+                          <div className="flex items-center gap-1 text-sm">
+                            <span className="text-gray-500">距离目标还剩</span>
+                            <span className="font-semibold text-orange-600">{daysRemaining}</span>
+                            <span className="text-gray-500">天</span>
+                          </div>
+                        )
+                      }
+                    }
+                    return null
+                  })()}
+                </>
               )}
             </div>
           </div>
