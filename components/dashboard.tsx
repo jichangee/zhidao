@@ -144,9 +144,9 @@ export default function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen" style={{ background: 'linear-gradient(to bottom right, #fb923c, #f97316)' }}>
         {/* Header Skeleton */}
-        <header className="bg-gradient-to-br from-orange-400 to-orange-500 pt-12 pb-6 px-4">
+        <header className="pt-12 pb-6 px-4">
           <div className="flex items-center justify-between mb-6">
             <Skeleton className="h-9 w-20 bg-orange-300/50" />
           </div>
@@ -184,7 +184,7 @@ export default function Dashboard() {
         </header>
 
         {/* Main Content Skeleton */}
-        <main className="px-4 pt-4 pb-24">
+        <main className="px-4 pt-4 pb-24 bg-gray-50 min-h-screen">
           {/* Tabs Skeleton */}
           <div className="mb-4">
             <div className="flex gap-2 mb-4">
@@ -223,7 +223,7 @@ export default function Dashboard() {
 
         {/* Bottom Navigation Skeleton */}
         <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
-          <div className="flex items-center justify-center gap-16 max-w-md mx-auto py-3">
+          <div className="flex items-center justify-center gap-16 max-w-md mx-auto py-2">
             <div className="flex flex-col items-center gap-1.5 p-2">
               <Skeleton className="w-9 h-9 rounded-full" />
               <Skeleton className="h-3 w-8" />
@@ -236,7 +236,7 @@ export default function Dashboard() {
         </nav>
 
         {/* Floating Button Skeleton */}
-        <Skeleton className="fixed bottom-28 right-6 w-14 h-14 rounded-full" />
+        <Skeleton className="fixed bottom-24 right-6 w-14 h-14 rounded-full" />
       </div>
     )
   }
@@ -247,9 +247,9 @@ export default function Dashboard() {
   const totalCount = statusCounts.active + statusCounts.retired + statusCounts.sold
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ background: 'linear-gradient(to bottom right, #fb923c, #f97316)' }}>
       {/* Header with orange gradient */}
-      <header className="bg-gradient-to-br from-orange-400 to-orange-500 pt-12 pb-6 px-4">
+      <header className="pt-12 pb-6 px-4">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-bold text-gray-800">值道</h1>
 
@@ -291,7 +291,7 @@ export default function Dashboard() {
       </header>
 
       {/* Main Content */}
-      <main className="px-4 pt-4 pb-24">
+      <main className="px-4 pt-4 pb-24 bg-gray-50 min-h-screen">
         {/* Category and Status Filters using Tabs */}
         <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="mb-4">
           <TabsList className="w-full justify-start overflow-x-auto">
@@ -419,7 +419,7 @@ export default function Dashboard() {
 
       {/* Bottom Navigation Bar */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-bottom">
-        <div className="flex items-center justify-center gap-16 max-w-md mx-auto py-3">
+        <div className="flex items-center justify-center gap-16 max-w-md mx-auto py-2">
           <button className="flex flex-col items-center gap-1.5 p-2 min-w-[60px]">
             <div className="w-9 h-9 rounded-full bg-gray-800 flex items-center justify-center">
               <Home className="w-5 h-5 text-white" />
@@ -439,7 +439,7 @@ export default function Dashboard() {
       {/* Floating Add Asset Button */}
       <button
         onClick={() => router.push("/assets/new")}
-        className="fixed bottom-28 right-6 w-14 h-14 rounded-full bg-gray-800 flex items-center justify-center shadow-lg hover:shadow-xl hover:bg-gray-900 transition-all z-50 active:scale-95"
+        className="fixed bottom-24 right-6 w-14 h-14 rounded-full bg-gray-800 flex items-center justify-center shadow-lg hover:shadow-xl hover:bg-gray-900 transition-all z-50 active:scale-95"
         aria-label="新增资产"
       >
         <Plus className="w-7 h-7 text-white" />
