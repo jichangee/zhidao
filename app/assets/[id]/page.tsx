@@ -11,6 +11,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface Asset {
   id: string
@@ -153,8 +154,55 @@ export default function AssetDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-gray-600">加载中...</div>
+      <div className="min-h-screen bg-white pb-24">
+        {/* Header Skeleton */}
+        <header className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3">
+          <div className="flex items-center justify-between">
+            <Skeleton className="w-8 h-8 rounded-full" />
+            <Skeleton className="w-24 h-6" />
+            <div className="w-8" />
+          </div>
+        </header>
+
+        <div className="px-4 pb-4">
+          {/* Icon Skeleton */}
+          <div className="flex justify-center my-6">
+            <Skeleton className="w-24 h-24 rounded-xl" />
+          </div>
+
+          {/* Title Skeleton */}
+          <div className="mb-6 text-center flex justify-center">
+            <Skeleton className="h-8 w-48" />
+          </div>
+
+          {/* Info Cards Skeleton */}
+          <div className="space-y-4">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Skeleton className="w-4 h-4 rounded-full" />
+                  <Skeleton className="w-16 h-4" />
+                </div>
+                <Skeleton className="h-16 rounded-lg" />
+              </div>
+            ))}
+          </div>
+
+          {/* Toggle Options Skeleton */}
+          <div className="space-y-3 mt-4">
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-14 rounded-lg" />
+            ))}
+          </div>
+        </div>
+
+        {/* Action Buttons Skeleton */}
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200">
+          <div className="flex gap-3">
+            <Skeleton className="flex-1 h-12 rounded-md" />
+            <Skeleton className="flex-1 h-12 rounded-md" />
+          </div>
+        </div>
       </div>
     )
   }

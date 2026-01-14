@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { X, Bell, Save } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function SettingsPage() {
   const router = useRouter()
@@ -62,8 +63,39 @@ export default function SettingsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-gray-600">加载中...</div>
+      <div className="min-h-screen bg-white pb-24">
+        {/* Header Skeleton */}
+        <header className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3">
+          <div className="flex items-center justify-between">
+            <Skeleton className="w-8 h-8 rounded-full" />
+            <Skeleton className="w-16 h-6" />
+            <div className="w-8" />
+          </div>
+        </header>
+
+        <div className="px-4 py-6">
+          {/* Section Title Skeleton */}
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Skeleton className="w-5 h-5" />
+              <Skeleton className="w-24 h-6" />
+            </div>
+
+            {/* Input Field Skeleton */}
+            <div className="space-y-4">
+              <div>
+                <Skeleton className="w-20 h-5 mb-2" />
+                <Skeleton className="w-full h-10" />
+                <Skeleton className="w-full h-4 mt-2" />
+              </div>
+            </div>
+          </div>
+
+          {/* Button Skeleton */}
+          <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200">
+            <Skeleton className="w-full h-12" />
+          </div>
+        </div>
       </div>
     )
   }

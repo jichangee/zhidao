@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface Asset {
   id: string
@@ -143,8 +144,99 @@ export default function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-gray-600">加载中...</div>
+      <div className="min-h-screen bg-gray-50">
+        {/* Header Skeleton */}
+        <header className="bg-gradient-to-br from-orange-400 to-orange-500 pt-12 pb-6 px-4">
+          <div className="flex items-center justify-between mb-6">
+            <Skeleton className="h-9 w-20 bg-orange-300/50" />
+          </div>
+
+          {/* Asset Overview Card Skeleton */}
+          <div className="bg-white rounded-2xl p-5 shadow-lg">
+            <div className="flex items-center justify-between mb-4">
+              <Skeleton className="h-4 w-16" />
+              <Skeleton className="h-4 w-12" />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <Skeleton className="h-3 w-12 mb-2" />
+                <Skeleton className="h-8 w-24" />
+              </div>
+              <div>
+                <Skeleton className="h-3 w-16 mb-2" />
+                <Skeleton className="h-8 w-24" />
+              </div>
+            </div>
+
+            {/* Progress Bar Skeleton */}
+            <div className="space-y-2">
+              <Skeleton className="h-3 w-full" />
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-3 w-16" />
+                <div className="flex gap-2">
+                  <Skeleton className="h-3 w-16" />
+                  <Skeleton className="h-3 w-16" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Main Content Skeleton */}
+        <main className="px-4 pt-4 pb-24">
+          {/* Tabs Skeleton */}
+          <div className="mb-4">
+            <div className="flex gap-2 mb-4">
+              {[1, 2, 3, 4].map((i) => (
+                <Skeleton key={i} className="h-9 w-16" />
+              ))}
+            </div>
+
+            {/* Status Filter Buttons Skeleton */}
+            <div className="flex items-center gap-2 mb-4">
+              {[1, 2, 3, 4].map((i) => (
+                <Skeleton key={i} className="h-7 w-16 rounded-full" />
+              ))}
+            </div>
+
+            {/* Asset Grid Skeleton */}
+            <div className="grid grid-cols-2 gap-3">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <Card key={i} className="p-3">
+                  <CardHeader className="p-0 gap-2">
+                    <div className="flex items-start justify-between">
+                      <Skeleton className="w-10 h-10 rounded-lg" />
+                      <Skeleton className="h-5 w-14 rounded-full" />
+                    </div>
+                    <Skeleton className="h-4 w-24" />
+                  </CardHeader>
+                  <CardContent className="p-0 space-y-1 mt-3">
+                    <Skeleton className="h-3 w-full" />
+                    <Skeleton className="h-3 w-20" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </main>
+
+        {/* Bottom Navigation Skeleton */}
+        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
+          <div className="flex items-center justify-center gap-16 max-w-md mx-auto py-3">
+            <div className="flex flex-col items-center gap-1.5 p-2">
+              <Skeleton className="w-9 h-9 rounded-full" />
+              <Skeleton className="h-3 w-8" />
+            </div>
+            <div className="flex flex-col items-center gap-1.5 p-2">
+              <Skeleton className="w-6 h-6 rounded" />
+              <Skeleton className="h-3 w-8" />
+            </div>
+          </div>
+        </nav>
+
+        {/* Floating Button Skeleton */}
+        <Skeleton className="fixed bottom-28 right-6 w-14 h-14 rounded-full" />
       </div>
     )
   }

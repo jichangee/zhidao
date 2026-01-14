@@ -14,6 +14,16 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Switch } from "@/components/ui/switch"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card, CardContent } from "@/components/ui/card"
+import {
+  Field,
+  FieldLabel,
+  FieldDescription,
+  FieldGroup,
+  FieldContent,
+} from "@/components/ui/field"
 
 const DEFAULT_CATEGORIES = ["全部"]
 const DEFAULT_TAGS: string[] = []
@@ -450,264 +460,293 @@ export default function NewAssetPage() {
           />
         </div>
 
-        {/* Price */}
-        <div className="mb-4">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-5 h-5 rounded-full bg-orange-100 flex items-center justify-center">
-              <span className="text-xs text-orange-600">*</span>
-            </div>
-            <label className="text-sm font-medium text-gray-700">价格</label>
-          </div>
-          <Input
-            type="number"
-            step="0.01"
-            placeholder="请输入物品价格"
-            value={formData.purchasePrice}
-            onChange={(e) => handleInputChange("purchasePrice", e.target.value)}
-            className="border-gray-200"
-            required
-          />
-        </div>
+        {/* Basic Information Card */}
+        <Card className="mb-4 border-gray-200">
+          <CardContent className="py-4">
+            <FieldGroup>
+              {/* Price */}
+              <Field>
+                <FieldLabel htmlFor="purchasePrice">
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 rounded-full bg-orange-100 flex items-center justify-center">
+                      <span className="text-xs text-orange-600">*</span>
+                    </div>
+                    <span>价格</span>
+                  </div>
+                </FieldLabel>
+                <FieldContent>
+                  <FieldDescription>请输入购买物品的实际价格</FieldDescription>
+                  <Input
+                    id="purchasePrice"
+                    type="number"
+                    step="0.01"
+                    placeholder="请输入物品价格"
+                    value={formData.purchasePrice}
+                    onChange={(e) => handleInputChange("purchasePrice", e.target.value)}
+                    className="border-gray-200"
+                    required
+                  />
+                </FieldContent>
+              </Field>
 
-        {/* Purchase Date */}
-        <div className="mb-4">
-          <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-gray-500" />
-              <label className="text-sm font-medium text-gray-700">购买日期</label>
-            </div>
-            <div className="flex items-center gap-2">
-              <input
-                type="date"
-                value={formData.purchaseDate}
-                onChange={(e) => handleInputChange("purchaseDate", e.target.value)}
-                className="text-sm text-gray-700 border-0 focus:outline-none"
-              />
-              <ChevronRight className="w-4 h-4 text-gray-400" />
-            </div>
-          </div>
-        </div>
+              {/* Purchase Date */}
+              <Field orientation="horizontal">
+                <FieldLabel htmlFor="purchaseDate">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-gray-500" />
+                    <span>购买日期</span>
+                  </div>
+                </FieldLabel>
+                <div className="flex items-center gap-2">
+                  <input
+                    id="purchaseDate"
+                    type="date"
+                    value={formData.purchaseDate}
+                    onChange={(e) => handleInputChange("purchaseDate", e.target.value)}
+                    className="text-sm text-gray-700 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                  <ChevronRight className="w-4 h-4 text-gray-400" />
+                </div>
+              </Field>
 
-        {/* Category */}
-        <div className="mb-4">
-          <button
-            type="button"
-            onClick={() => setShowCategoryDialog(true)}
-            className="w-full flex items-center justify-between p-3 border border-gray-200 rounded-lg"
-          >
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full border-2 border-gray-400"></div>
-              <label className="text-sm font-medium text-gray-700">类别</label>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-700">{formData.category}</span>
-              <ChevronRight className="w-4 h-4 text-gray-400" />
-            </div>
-          </button>
-        </div>
+              {/* Category */}
+              <Field orientation="horizontal">
+                <FieldLabel>
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded-full border-2 border-gray-400"></div>
+                    <span>类别</span>
+                  </div>
+                </FieldLabel>
+                <button
+                  type="button"
+                  onClick={() => setShowCategoryDialog(true)}
+                  className="flex items-center gap-2 hover:text-orange-600 transition-colors"
+                >
+                  <span className="text-sm text-gray-700">{formData.category}</span>
+                  <ChevronRight className="w-4 h-4 text-gray-400" />
+                </button>
+              </Field>
 
-        {/* Tags */}
-        <div className="mb-4">
-          <button
-            type="button"
-            onClick={() => setShowTagDialog(true)}
-            className="w-full flex items-center justify-between p-3 border border-gray-200 rounded-lg"
-          >
-            <div className="flex items-center gap-2">
-              <Tag className="w-4 h-4 text-gray-500" />
-              <label className="text-sm font-medium text-gray-700">标签</label>
-            </div>
-            <div className="flex items-center gap-2">
-              {selectedTags.length > 0 ? (
-                <span className="text-sm text-gray-700">{selectedTags.length}个标签</span>
-              ) : (
-                <span className="text-sm text-gray-400">未选择</span>
-              )}
-              <ChevronRight className="w-4 h-4 text-gray-400" />
-            </div>
-          </button>
-        </div>
+              {/* Tags */}
+              <Field orientation="horizontal">
+                <FieldLabel>
+                  <div className="flex items-center gap-2">
+                    <Tag className="w-4 h-4 text-gray-500" />
+                    <span>标签</span>
+                  </div>
+                </FieldLabel>
+                <button
+                  type="button"
+                  onClick={() => setShowTagDialog(true)}
+                  className="flex items-center gap-2 hover:text-orange-600 transition-colors"
+                >
+                  {selectedTags.length > 0 ? (
+                    <span className="text-sm text-gray-700">{selectedTags.length}个标签</span>
+                  ) : (
+                    <span className="text-sm text-gray-400">未选择</span>
+                  )}
+                  <ChevronRight className="w-4 h-4 text-gray-400" />
+                </button>
+              </Field>
+            </FieldGroup>
+          </CardContent>
+        </Card>
 
-        {/* Target Cost */}
-        <div className="mb-4">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-5 h-5 rounded-full bg-orange-100 flex items-center justify-center">
-              <span className="text-xs text-orange-600">*</span>
-            </div>
-            <label className="text-sm font-medium text-gray-700">目标成本</label>
-          </div>
-          <div className="grid grid-cols-3 gap-2 mb-3">
-            {["不设定", "按价格", "按日期"].map((type) => (
-              <button
-                key={type}
-                type="button"
-                onClick={() => handleInputChange("targetCostType", type)}
-                className={`px-3 py-2 rounded-lg text-xs font-medium ${
-                  formData.targetCostType === type
-                    ? "bg-gray-800 text-white"
-                    : "bg-gray-100 text-gray-700"
-                }`}
-              >
-                {type}
-              </button>
-            ))}
-          </div>
-          
-          {formData.targetCostType === "按价格" && (
-            <div className="mt-2">
-              <Input
-                type="number"
-                step="0.01"
-                placeholder="请输入目标价格"
-                value={formData.targetCost}
-                onChange={(e) => handleInputChange("targetCost", e.target.value)}
-                className="border-gray-200"
-              />
-            </div>
-          )}
-          
-          {formData.targetCostType === "按日期" && (
-            <div className="mt-2">
-              <Input
-                type="date"
-                value={formData.targetDate}
-                onChange={(e) => handleInputChange("targetDate", e.target.value)}
-                className="border-gray-200"
-              />
-            </div>
-          )}
-        </div>
+        {/* Target Cost Card */}
+        <Card className="mb-4 border-gray-200">
+          <CardContent className="py-4">
+            <Field>
+              <FieldLabel>
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 rounded-full bg-orange-100 flex items-center justify-center">
+                    <span className="text-xs text-orange-600">*</span>
+                  </div>
+                  <span>目标成本</span>
+                </div>
+              </FieldLabel>
+              <FieldContent>
+                <FieldDescription>
+                  设置物品的目标成本，用于计算性价比和回本进度
+                </FieldDescription>
+                <div className="grid grid-cols-3 gap-2">
+                  {["不设定", "按价格", "按日期"].map((type) => (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={() => handleInputChange("targetCostType", type)}
+                      className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                        formData.targetCostType === type
+                          ? "bg-gray-800 text-white"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      }`}
+                    >
+                      {type}
+                    </button>
+                  ))}
+                </div>
+                
+                {formData.targetCostType === "按价格" && (
+                  <div className="mt-3">
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="请输入目标价格"
+                      value={formData.targetCost}
+                      onChange={(e) => handleInputChange("targetCost", e.target.value)}
+                      className="border-gray-200"
+                    />
+                  </div>
+                )}
+                
+                {formData.targetCostType === "按日期" && (
+                  <div className="mt-3">
+                    <Input
+                      type="date"
+                      value={formData.targetDate}
+                      onChange={(e) => handleInputChange("targetDate", e.target.value)}
+                      className="border-gray-200"
+                    />
+                  </div>
+                )}
+              </FieldContent>
+            </Field>
+          </CardContent>
+        </Card>
 
-        {/* Notes */}
-        <div className="mb-4">
-          <label className="text-sm font-medium text-gray-700 mb-2 block">输入备注</label>
-          <Textarea
-            value={formData.notes}
-            onChange={(e) => handleInputChange("notes", e.target.value)}
-            placeholder=""
-            className="h-32 resize-none"
-          />
-        </div>
+        {/* Notes Card */}
+        <Card className="mb-4 border-gray-200">
+          <CardContent className="py-4">
+            <Field>
+              <FieldLabel htmlFor="notes">备注信息</FieldLabel>
+              <FieldContent>
+                <FieldDescription>
+                  添加关于此物品的额外信息或备注
+                </FieldDescription>
+                <Textarea
+                  id="notes"
+                  value={formData.notes}
+                  onChange={(e) => handleInputChange("notes", e.target.value)}
+                  placeholder="添加备注信息..."
+                  className="h-32 resize-none border-gray-200"
+                />
+              </FieldContent>
+            </Field>
+          </CardContent>
+        </Card>
 
         {/* Toggle Options */}
-        <div className="space-y-3 mb-4">
-          {/* Pin to top */}
-          <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-            <div className="flex items-center gap-2">
-              <Pin className="w-4 h-4 text-gray-500" />
-              <label className="text-sm font-medium text-gray-700">置顶</label>
-            </div>
-            <button
-              type="button"
-              onClick={() => handleToggle("isPinned")}
-              className={`relative w-11 h-6 rounded-full transition-colors ${
-                formData.isPinned ? "bg-orange-500" : "bg-gray-300"
-              }`}
-            >
-              <span
-                className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                  formData.isPinned ? "translate-x-5" : ""
-                }`}
-              />
-            </button>
-          </div>
+        <Card className="mb-4 border-gray-200">
+          <CardContent className="py-4">
+            <FieldGroup>
+              {/* Pin to top */}
+              <Field orientation="horizontal">
+                <FieldLabel htmlFor="isPinned">
+                  <div className="flex items-center gap-2">
+                    <Pin className="w-4 h-4 text-gray-500" />
+                    <span>置顶</span>
+                  </div>
+                </FieldLabel>
+                <FieldContent>
+                  <FieldDescription>在资产列表中优先显示此物品</FieldDescription>
+                </FieldContent>
+                <Switch
+                  id="isPinned"
+                  checked={formData.isPinned}
+                  onCheckedChange={() => handleToggle("isPinned")}
+                  className="data-[state=checked]:bg-orange-500"
+                />
+              </Field>
 
-          {/* Exclude from total */}
-          <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-            <div className="flex items-center gap-2">
-              <UserX className="w-4 h-4 text-gray-500" />
-              <label className="text-sm font-medium text-gray-700">不计入总资产</label>
-            </div>
-            <button
-              type="button"
-              onClick={() => handleToggle("excludeFromTotal")}
-              className={`relative w-11 h-6 rounded-full transition-colors ${
-                formData.excludeFromTotal ? "bg-orange-500" : "bg-gray-300"
-              }`}
-            >
-              <span
-                className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                  formData.excludeFromTotal ? "translate-x-5" : ""
-                }`}
-              />
-            </button>
-          </div>
+              {/* Exclude from total */}
+              <Field orientation="horizontal">
+                <FieldLabel htmlFor="excludeFromTotal">
+                  <div className="flex items-center gap-2">
+                    <UserX className="w-4 h-4 text-gray-500" />
+                    <span>不计入总资产</span>
+                  </div>
+                </FieldLabel>
+                <FieldContent>
+                  <FieldDescription>此物品不会计入总资产统计</FieldDescription>
+                </FieldContent>
+                <Switch
+                  id="excludeFromTotal"
+                  checked={formData.excludeFromTotal}
+                  onCheckedChange={() => handleToggle("excludeFromTotal")}
+                  className="data-[state=checked]:bg-orange-500"
+                />
+              </Field>
 
-          {/* Exclude from daily average */}
-          <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-            <div className="flex items-center gap-2">
-              <BarChart3 className="w-4 h-4 text-gray-500" />
-              <label className="text-sm font-medium text-gray-700">不计入日均</label>
-            </div>
-            <button
-              type="button"
-              onClick={() => handleToggle("excludeFromDailyAvg")}
-              className={`relative w-11 h-6 rounded-full transition-colors ${
-                formData.excludeFromDailyAvg ? "bg-orange-500" : "bg-gray-300"
-              }`}
-            >
-              <span
-                className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                  formData.excludeFromDailyAvg ? "translate-x-5" : ""
-                }`}
-              />
-            </button>
-          </div>
+              {/* Exclude from daily average */}
+              <Field orientation="horizontal">
+                <FieldLabel htmlFor="excludeFromDailyAvg">
+                  <div className="flex items-center gap-2">
+                    <BarChart3 className="w-4 h-4 text-gray-500" />
+                    <span>不计入日均</span>
+                  </div>
+                </FieldLabel>
+                <FieldContent>
+                  <FieldDescription>此物品不会计入日均成本统计</FieldDescription>
+                </FieldContent>
+                <Switch
+                  id="excludeFromDailyAvg"
+                  checked={formData.excludeFromDailyAvg}
+                  onCheckedChange={() => handleToggle("excludeFromDailyAvg")}
+                  className="data-[state=checked]:bg-orange-500"
+                />
+              </Field>
 
-          {/* Retired */}
-          <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-            <div className="flex items-center gap-2">
-              <ArrowUp className="w-4 h-4 text-gray-500" />
-              <label className="text-sm font-medium text-gray-700">已退役</label>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                if (formData.status === "已退役") {
-                  handleStatusChange("服役中")
-                } else {
-                  handleStatusChange("已退役")
-                }
-              }}
-              className={`relative w-11 h-6 rounded-full transition-colors ${
-                formData.status === "已退役" ? "bg-orange-500" : "bg-gray-300"
-              }`}
-            >
-              <span
-                className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                  formData.status === "已退役" ? "translate-x-5" : ""
-                }`}
-              />
-            </button>
-          </div>
+              {/* Retired */}
+              <Field orientation="horizontal">
+                <FieldLabel htmlFor="retired">
+                  <div className="flex items-center gap-2">
+                    <ArrowUp className="w-4 h-4 text-gray-500" />
+                    <span>已退役</span>
+                  </div>
+                </FieldLabel>
+                <FieldContent>
+                  <FieldDescription>标记为不再使用的物品</FieldDescription>
+                </FieldContent>
+                <Switch
+                  id="retired"
+                  checked={formData.status === "已退役"}
+                  onCheckedChange={() => {
+                    if (formData.status === "已退役") {
+                      handleStatusChange("服役中")
+                    } else {
+                      handleStatusChange("已退役")
+                    }
+                  }}
+                  className="data-[state=checked]:bg-orange-500"
+                />
+              </Field>
 
-          {/* Sold */}
-          <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-            <div className="flex items-center gap-2">
-              <ArrowDown className="w-4 h-4 text-gray-500" />
-              <label className="text-sm font-medium text-gray-700">卖出的</label>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                if (formData.status === "已卖出") {
-                  handleStatusChange("服役中")
-                } else {
-                  handleStatusChange("已卖出")
-                }
-              }}
-              className={`relative w-11 h-6 rounded-full transition-colors ${
-                formData.status === "已卖出" ? "bg-orange-500" : "bg-gray-300"
-              }`}
-            >
-              <span
-                className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                  formData.status === "已卖出" ? "translate-x-5" : ""
-                }`}
-              />
-            </button>
-          </div>
-        </div>
+              {/* Sold */}
+              <Field orientation="horizontal">
+                <FieldLabel htmlFor="sold">
+                  <div className="flex items-center gap-2">
+                    <ArrowDown className="w-4 h-4 text-gray-500" />
+                    <span>已卖出</span>
+                  </div>
+                </FieldLabel>
+                <FieldContent>
+                  <FieldDescription>标记为已经卖出的物品</FieldDescription>
+                </FieldContent>
+                <Switch
+                  id="sold"
+                  checked={formData.status === "已卖出"}
+                  onCheckedChange={() => {
+                    if (formData.status === "已卖出") {
+                      handleStatusChange("服役中")
+                    } else {
+                      handleStatusChange("已卖出")
+                    }
+                  }}
+                  className="data-[state=checked]:bg-orange-500"
+                />
+              </Field>
+            </FieldGroup>
+          </CardContent>
+        </Card>
 
         {/* Save Button */}
         <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200">
@@ -844,35 +883,13 @@ export default function NewAssetPage() {
             <DialogDescription>上传图片或选择Emoji</DialogDescription>
           </DialogHeader>
           
-          {/* Tabs */}
-          <div className="flex gap-2 border-b border-gray-200 mb-4">
-            <button
-              type="button"
-              onClick={() => setImageTab("upload")}
-              className={`flex-1 py-2 text-sm font-medium ${
-                imageTab === "upload"
-                  ? "text-orange-600 border-b-2 border-orange-600"
-                  : "text-gray-500"
-              }`}
-            >
-              上传图片
-            </button>
-            <button
-              type="button"
-              onClick={() => setImageTab("emoji")}
-              className={`flex-1 py-2 text-sm font-medium ${
-                imageTab === "emoji"
-                  ? "text-orange-600 border-b-2 border-orange-600"
-                  : "text-gray-500"
-              }`}
-            >
-              Emoji
-            </button>
-          </div>
+          <Tabs value={imageTab} onValueChange={(value) => setImageTab(value as "upload" | "emoji")} className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="upload">上传图片</TabsTrigger>
+              <TabsTrigger value="emoji">Emoji</TabsTrigger>
+            </TabsList>
 
-          {/* Upload Tab */}
-          {imageTab === "upload" && (
-            <div className="space-y-4">
+            <TabsContent value="upload" className="mt-4">
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
                 <input
                   type="file"
@@ -893,36 +910,35 @@ export default function NewAssetPage() {
                   <span className="text-xs text-gray-400">支持 JPG、PNG、GIF，最大 5MB</span>
                 </label>
               </div>
-            </div>
-          )}
+            </TabsContent>
 
-          {/* Emoji Tab */}
-          {imageTab === "emoji" && (
-            <div className="space-y-4 max-h-64 overflow-y-auto">
-              <div className="grid grid-cols-8 gap-2">
-                {[
-                  "📱", "💻", "⌚", "🎧", "📷", "🎮", "📺", "🔌",
-                  "🚗", "🚲", "✈️", "🏠", "🛋️", "🛏️", "🚪", "🪑",
-                  "👕", "👔", "👖", "👟", "👓", "👜", "💼", "🎒",
-                  "📚", "✏️", "📝", "📖", "🎨", "🎭", "🎪", "🎬",
-                  "⚽", "🏀", "🏈", "⚾", "🎾", "🏐", "🏓", "🏸",
-                  "🍎", "🍌", "🍇", "🍊", "🍓", "🥝", "🍉", "🍑",
-                  "🍔", "🍕", "🌮", "🌯", "🍜", "🍱", "🍣", "🍤",
-                  "☕", "🍵", "🍶", "🍷", "🍸", "🍹", "🍺", "🍻",
-                  "⌨️",
-                ].map((emoji) => (
-                  <button
-                    key={emoji}
-                    type="button"
-                    onClick={() => handleEmojiSelect(emoji)}
-                    className="w-10 h-10 text-2xl hover:bg-gray-100 rounded-lg transition-colors"
-                  >
-                    {emoji}
-                  </button>
-                ))}
+            <TabsContent value="emoji" className="mt-4">
+              <div className="max-h-64 overflow-y-auto">
+                <div className="grid grid-cols-8 gap-2">
+                  {[
+                    "📱", "💻", "⌚", "🎧", "📷", "🎮", "📺", "🔌",
+                    "🚗", "🚲", "✈️", "🏠", "🛋️", "🛏️", "🚪", "🪑",
+                    "👕", "👔", "👖", "👟", "👓", "👜", "💼", "🎒",
+                    "📚", "✏️", "📝", "📖", "🎨", "🎭", "🎪", "🎬",
+                    "⚽", "🏀", "🏈", "⚾", "🎾", "🏐", "🏓", "🏸",
+                    "🍎", "🍌", "🍇", "🍊", "🍓", "🥝", "🍉", "🍑",
+                    "🍔", "🍕", "🌮", "🌯", "🍜", "🍱", "🍣", "🍤",
+                    "☕", "🍵", "🍶", "🍷", "🍸", "🍹", "🍺", "🍻",
+                    "⌨️",
+                  ].map((emoji) => (
+                    <button
+                      key={emoji}
+                      type="button"
+                      onClick={() => handleEmojiSelect(emoji)}
+                      className="w-10 h-10 text-2xl hover:bg-gray-100 rounded-lg transition-colors"
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            </TabsContent>
+          </Tabs>
         </DialogContent>
       </Dialog>
     </div>
