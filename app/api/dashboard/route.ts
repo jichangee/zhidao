@@ -73,6 +73,9 @@ export async function GET(request: NextRequest) {
       category: asset.category,
       imageUrl: asset.imageUrl,
       emoji: asset.emoji,
+      targetCostType: asset.targetCostType,
+      targetCost: asset.targetCost ? Number(asset.targetCost) : null,
+      targetDate: asset.targetDate ? asset.targetDate.toISOString() : null,
     }))
 
     return NextResponse.json({

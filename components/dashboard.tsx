@@ -19,6 +19,9 @@ interface Asset {
   category: string
   imageUrl: string | null
   emoji: string | null
+  targetCostType: string | null
+  targetCost: number | null
+  targetDate: string | null
 }
 
 interface DashboardData {
@@ -74,6 +77,43 @@ export default function Dashboard() {
   const calculateDailyCost = (price: number | null, daysUsed: number) => {
     if (!price || daysUsed === 0) return 0
     return price / daysUsed
+  }
+
+  const calculateTargetProgress = (asset: Asset) => {
+    if (!asset.targetCostType || asset.targetCostType === "不设定") {
+      return null
+    }
+
+    if (asset.targetCostType === "按价格") {
+      if (!asset.purchasePrice || !asset.targetCost) return null
+      // 进度 = 购买价格 / 目标价格 * 100
+      const progress = Math.min(100, (asset.purchasePrice / asset.targetCost) * 100)
+      return {
+        progress,
+        label: `目标价格: ${formatCurrency(asset.targetCost)}`,
+        current: formatCurrency(asset.purchasePrice),
+      }
+    }
+
+    if (asset.targetCostType === "按日期") {
+      if (!asset.purchaseDate || !asset.targetDate) return null
+      const purchaseDate = new Date(asset.purchaseDate)
+      const targetDate = new Date(asset.targetDate)
+      const now = new Date()
+      
+      const totalDays = Math.max(1, Math.floor((targetDate.getTime() - purchaseDate.getTime()) / (1000 * 60 * 60 * 24)))
+      const daysUsed = Math.max(0, Math.floor((now.getTime() - purchaseDate.getTime()) / (1000 * 60 * 60 * 24)))
+      
+      // 进度 = 已使用天数 / 目标天数 * 100
+      const progress = Math.min(100, (daysUsed / totalDays) * 100)
+      return {
+        progress,
+        label: `目标日期: ${targetDate.toLocaleDateString("zh-CN")}`,
+        current: `已使用 ${daysUsed} 天`,
+      }
+    }
+
+    return null
   }
 
   const formatCurrency = (amount: number) => {
@@ -349,59 +389,91 @@ export default function Dashboard() {
             </div>
 
             {/* Asset Grid */}
-            <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="grid grid-cols-1 gap-4 mb-4">
               {sortedAssets.map((asset) => {
                 const daysUsed = calculateDaysUsed(asset.purchaseDate)
                 const dailyCost = calculateDailyCost(asset.purchasePrice, daysUsed)
+                const targetProgress = calculateTargetProgress(asset)
                 const statusColors = {
-                  "服役中": "bg-orange-100 text-orange-700",
-                  "已退役": "bg-gray-100 text-gray-700",
-                  "已卖出": "bg-gray-100 text-gray-700",
+                  "服役中": "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-sm",
+                  "已退役": "bg-gradient-to-r from-gray-400 to-gray-500 text-white shadow-sm",
+                  "已卖出": "bg-gradient-to-r from-slate-400 to-slate-500 text-white shadow-sm",
                 }
 
                 return (
                   <Card
                     key={asset.id}
                     onClick={() => router.push(`/assets/${asset.id}`)}
-                    className="cursor-pointer hover:shadow-md transition-shadow p-3 gap-3"
+                    className="cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 p-5 border-0 bg-white overflow-hidden relative"
                   >
-                    <CardHeader className="p-0 gap-2">
-                      <div className="flex items-start justify-between">
-                        <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center overflow-hidden">
-                          {asset.emoji ? (
-                            <span className="text-2xl">{asset.emoji}</span>
-                          ) : asset.imageUrl ? (
-                            <img 
-                              src={asset.imageUrl} 
-                              alt={asset.name} 
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <Package className="w-5 h-5 text-amber-600" />
-                          )}
-                        </div>
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                          statusColors[asset.status as keyof typeof statusColors] || "bg-gray-100 text-gray-700"
-                        }`}>
-                          {asset.status}
-                        </span>
-                      </div>
-                      <CardTitle className="text-sm">{asset.name}</CardTitle>
-                    </CardHeader>
+                    {/* 背景装饰 */}
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-50 to-transparent rounded-full blur-2xl -z-0 opacity-50" />
                     
-                    <CardContent className="p-0 space-y-1">
-                      {asset.purchasePrice && (
-                        <div className="text-xs text-gray-600">
-                          {formatCurrency(asset.purchasePrice)} | 已使用{daysUsed}天
+                    <div className="relative z-10">
+                      <CardHeader className="p-0 mb-4">
+                        <div className="flex items-center gap-4 mb-3">
+                          {/* 大图标/emoji */}
+                          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-100 to-orange-50 flex items-center justify-center overflow-hidden shadow-md">
+                            {asset.emoji ? (
+                              <span className="text-4xl">{asset.emoji}</span>
+                            ) : asset.imageUrl ? (
+                              <img 
+                                src={asset.imageUrl} 
+                                alt={asset.name} 
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <Package className="w-8 h-8 text-orange-600" />
+                            )}
+                          </div>
+                          
+                          <div className="flex-1">
+                            <CardTitle className="text-lg font-bold text-gray-900 mb-2">{asset.name}</CardTitle>
+                            <span className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${
+                              statusColors[asset.status as keyof typeof statusColors] || "bg-gray-100 text-gray-700"
+                            }`}>
+                              {asset.status}
+                            </span>
+                          </div>
                         </div>
-                      )}
+                      </CardHeader>
                       
-                      {dailyCost > 0 && (
-                        <div className="text-xs font-medium text-gray-900">
-                          {formatCurrency(dailyCost)}/天
+                      <CardContent className="p-0">
+                        {/* 价格和日期信息 */}
+                        {asset.purchasePrice && (
+                          <div className="bg-gradient-to-r from-gray-50 to-transparent rounded-xl p-4 mb-3">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-xs font-medium text-gray-500">购买价格</span>
+                              <span className="text-xs text-gray-500">已使用 {daysUsed} 天</span>
+                            </div>
+                            <div className="text-2xl font-bold text-gray-900">{formatCurrency(asset.purchasePrice)}</div>
+                          </div>
+                        )}
+                        
+                        {/* 日均成本 - 突出显示 */}
+                        {dailyCost > 0 && (
+                          <div className="bg-gradient-to-r from-orange-50 to-transparent rounded-xl p-4 border-l-4 border-orange-500">
+                            <div className="text-xs font-medium text-orange-700 mb-1">日均成本</div>
+                            <div className="text-xl font-bold text-orange-600">{formatCurrency(dailyCost)}<span className="text-sm font-normal text-gray-600">/天</span></div>
+                          </div>
+                        )}
+                      </CardContent>
+
+                      {/* Target Cost Progress Bar */}
+                      {targetProgress && (
+                        <div className="mt-4 p-3 bg-gray-50 rounded-xl">
+                          <div className="flex items-center justify-between text-xs font-medium text-gray-600 mb-2">
+                            <span>{targetProgress.current}</span>
+                            <span className="text-orange-600">{Math.round(targetProgress.progress)}%</span>
+                          </div>
+                          <Progress 
+                            value={targetProgress.progress}
+                            className="h-2.5 bg-gray-200 mb-2"
+                          />
+                          <div className="text-xs text-gray-500 text-center">{targetProgress.label}</div>
                         </div>
                       )}
-                    </CardContent>
+                    </div>
                   </Card>
                 )
               })}
