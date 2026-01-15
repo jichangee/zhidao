@@ -80,40 +80,20 @@ export default function Dashboard() {
   }
 
   const calculateTargetProgress = (asset: Asset) => {
-    if (!asset.targetCostType || asset.targetCostType === "不设定") {
+    if (!asset.targetCostType || asset.targetCostType !== "按价格") {
       return null
     }
 
-    if (asset.targetCostType === "按价格") {
-      if (!asset.purchasePrice || !asset.targetCost) return null
-      // 进度 = 购买价格 / 目标价格 * 100
-      const progress = Math.min(100, (asset.purchasePrice / asset.targetCost) * 100)
-      return {
-        progress,
-        label: `目标价格: ${formatCurrency(asset.targetCost)}`,
-        current: formatCurrency(asset.purchasePrice),
-      }
+    if (!asset.purchasePrice || !asset.targetCost) return null
+    const daysUsed = calculateDaysUsed(asset.purchaseDate)
+    const totalDays = Math.max(1, Math.ceil(asset.purchasePrice / asset.targetCost))
+    // 进度 = 已使用天数 / 目标天数 * 100
+    const progress = Math.min(100, (daysUsed / totalDays) * 100)
+    return {
+      progress,
+      label: `目标成本: ${formatCurrency(asset.targetCost)}`,
+      current: `已使用 ${daysUsed} 天 / 目标 ${totalDays} 天`,
     }
-
-    if (asset.targetCostType === "按日期") {
-      if (!asset.purchaseDate || !asset.targetDate) return null
-      const purchaseDate = new Date(asset.purchaseDate)
-      const targetDate = new Date(asset.targetDate)
-      const now = new Date()
-      
-      const totalDays = Math.max(1, Math.floor((targetDate.getTime() - purchaseDate.getTime()) / (1000 * 60 * 60 * 24)))
-      const daysUsed = Math.max(0, Math.floor((now.getTime() - purchaseDate.getTime()) / (1000 * 60 * 60 * 24)))
-      
-      // 进度 = 已使用天数 / 目标天数 * 100
-      const progress = Math.min(100, (daysUsed / totalDays) * 100)
-      return {
-        progress,
-        label: `目标日期: ${targetDate.toLocaleDateString("zh-CN")}`,
-        current: `已使用 ${daysUsed} 天`,
-      }
-    }
-
-    return null
   }
 
   const formatCurrency = (amount: number) => {
@@ -238,22 +218,42 @@ export default function Dashboard() {
               {[1, 2, 3, 4].map((i) => (
                 <Skeleton key={i} className="h-7 w-16 rounded-full" />
               ))}
+              <Skeleton className="h-7 w-16 ml-auto" />
             </div>
 
             {/* Asset Grid Skeleton */}
-            <div className="grid grid-cols-2 gap-3">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <Card key={i} className="p-3">
-                  <CardHeader className="p-0 gap-2">
-                    <div className="flex items-start justify-between">
-                      <Skeleton className="w-10 h-10 rounded-lg" />
-                      <Skeleton className="h-5 w-14 rounded-full" />
+            <div className="grid grid-cols-1 gap-4">
+              {[1, 2, 3, 4].map((i) => (
+                <Card key={i} className="p-5">
+                  <CardHeader className="p-0 mb-4">
+                    <div className="flex items-center gap-4 mb-3">
+                      <Skeleton className="w-16 h-16 rounded-2xl" />
+                      <div className="flex-1 space-y-2">
+                        <Skeleton className="h-5 w-32" />
+                        <Skeleton className="h-5 w-16 rounded-full" />
+                      </div>
                     </div>
-                    <Skeleton className="h-4 w-24" />
                   </CardHeader>
-                  <CardContent className="p-0 space-y-1 mt-3">
-                    <Skeleton className="h-3 w-full" />
-                    <Skeleton className="h-3 w-20" />
+                  <CardContent className="p-0 space-y-3">
+                    <div className="rounded-xl p-4 bg-gray-50">
+                      <div className="flex items-center justify-between mb-2">
+                        <Skeleton className="h-3 w-16" />
+                        <Skeleton className="h-3 w-20" />
+                      </div>
+                      <Skeleton className="h-6 w-28" />
+                    </div>
+                    <div className="rounded-xl p-4 bg-orange-50">
+                      <Skeleton className="h-3 w-16 mb-2" />
+                      <Skeleton className="h-5 w-24" />
+                    </div>
+                    <div className="rounded-xl p-3 bg-gray-50 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Skeleton className="h-3 w-20" />
+                        <Skeleton className="h-3 w-10" />
+                      </div>
+                      <Skeleton className="h-2.5 w-full" />
+                      <Skeleton className="h-3 w-28 mx-auto" />
+                    </div>
                   </CardContent>
                 </Card>
               ))}
@@ -262,7 +262,7 @@ export default function Dashboard() {
         </main>
 
         {/* Bottom Navigation Skeleton */}
-        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
+        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 safe-area-bottom">
           <div className="flex items-center justify-center gap-16 max-w-md mx-auto py-2">
             <div className="flex flex-col items-center gap-1.5 p-2">
               <Skeleton className="w-9 h-9 rounded-full" />
@@ -276,7 +276,7 @@ export default function Dashboard() {
         </nav>
 
         {/* Floating Button Skeleton */}
-        <Skeleton className="fixed bottom-24 right-6 w-14 h-14 rounded-full" />
+        <Skeleton className="fixed bottom-24 right-6 w-14 h-14 rounded-full z-50" />
       </div>
     )
   }
@@ -404,7 +404,7 @@ export default function Dashboard() {
                   <Card
                     key={asset.id}
                     onClick={() => router.push(`/assets/${asset.id}`)}
-                    className="cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 p-5 border-0 bg-white overflow-hidden relative"
+                    className="cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 p-5 border-0 bg-white overflow-hidden relative z-0"
                   >
                     {/* 背景装饰 */}
                     <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-50 to-transparent rounded-full blur-2xl -z-0 opacity-50" />
@@ -490,7 +490,7 @@ export default function Dashboard() {
       </main>
 
       {/* Bottom Navigation Bar */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-bottom">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-bottom z-40">
         <div className="flex items-center justify-center gap-16 max-w-md mx-auto py-2">
           <button className="flex flex-col items-center gap-1.5 p-2 min-w-[60px]">
             <div className="w-9 h-9 rounded-full bg-gray-800 flex items-center justify-center">
